@@ -1,0 +1,37 @@
+### Ahmet için kayıt ol (customer id: 1)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "email": "ahmet@example.com",
+  "password": "guclu-sifre-123"
+}
+
+### Doğru şifreyle giriş yap
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ahmet@example.com",
+  "password": "guclu-sifre-123"
+}
+
+### Yanlış şifreyle giriş dene (hata vermeli)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ahmet@example.com",
+  "password": "yanlis-sifre"
+}
+
+### Aynı customer'a tekrar register olmayı dene (hata vermeli)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "email": "baska@example.com",
+  "password": "123456"
+}
