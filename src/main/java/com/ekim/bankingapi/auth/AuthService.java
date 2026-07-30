@@ -4,6 +4,7 @@ import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.InvalidCredentialsException;
+import com.ekim.bankingapi.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthResponse register(RegisterRequest request) {
         Customer customer = customerService.findCustomerEntityById(request.getCustomerId());
@@ -33,7 +35,9 @@ public class AuthService {
 
         User saved = userRepository.save(user);
 
-        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful");
+        String token = jwtService.generateToken(saved.getEmail(), saved.getId(), customer.getId());
+
+        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful", token);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -44,6 +48,8 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        return new AuthResponse(user.getId(), user.getCustomer().getId(), user.getEmail(), "Login successful");
+        String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getCustomer().getId());
+
+        return new AuthResponse(user.getId(), user.getCustomer().getId(), user.getEmail(), "Login successful", token);
     }
 }

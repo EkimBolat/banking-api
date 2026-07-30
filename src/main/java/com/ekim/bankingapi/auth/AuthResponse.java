@@ -11,4 +11,5 @@ public class AuthResponse {
     private Long customerId;
     private String email;
     private String message;
+    private String token;
 }
