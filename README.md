@@ -15,10 +15,10 @@ A RESTful Banking API built with **Spring Boot**, **PostgreSQL**, and **Spring D
 - [x] Project setup
 - [x] PostgreSQL integration
 - [x] Account Management
-- [ ] Deposit & Withdrawal
+- [x] Deposit & Withdrawal
 - [x] Money Transfer
 - [x] Transaction History
-- [ ] JWT Authentication
+- [x] JWT Authentication
 - [ ] Docker
 - [ ] Unit & Integration Tests
 
