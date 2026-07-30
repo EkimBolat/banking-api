@@ -2,6 +2,9 @@ package com.ekim.bankingapi.transfer;
 
 import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountRepository;
+import com.ekim.bankingapi.exception.InsufficientBalanceException;
+import com.ekim.bankingapi.exception.InvalidRequestException;
+import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import com.ekim.bankingapi.transaction.Transaction;
 import com.ekim.bankingapi.transaction.TransactionRepository;
 import com.ekim.bankingapi.transaction.TransactionType;
@@ -22,19 +25,19 @@ public class TransferService {
     @Transactional
     public Transfer transfer(Long fromAccountId, Long toAccountId, BigDecimal amount) {
         if (fromAccountId.equals(toAccountId)) {
-            throw new RuntimeException("Cannot transfer to the same account");
+            throw new InvalidRequestException("Cannot transfer to the same account");
         }
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Amount must be greater than zero");
+            throw new InvalidRequestException("Amount must be greater than zero");
         }
 
         Account fromAccount = accountRepository.findById(fromAccountId)
-                .orElseThrow(() -> new RuntimeException("Source account not found: " + fromAccountId));
+                .orElseThrow(() -> new ResourceNotFoundException("Source account not found: " + fromAccountId));
         Account toAccount = accountRepository.findById(toAccountId)
-                .orElseThrow(() -> new RuntimeException("Destination account not found: " + toAccountId));
+                .orElseThrow(() -> new ResourceNotFoundException("Destination account not found: " + toAccountId));
 
         if (fromAccount.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Insufficient balance in source account");
+            throw new InsufficientBalanceException("Insufficient balance in source account");
         }
 
         fromAccount.setBalance(fromAccount.getBalance().subtract(amount));

@@ -1,5 +1,7 @@
 package com.ekim.bankingapi.customer;
 
+import com.ekim.bankingapi.exception.DuplicateResourceException;
+import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +15,17 @@ public class CustomerService {
 
     public Customer createCustomer(Customer customer) {
         if (customerRepository.existsByEmail(customer.getEmail())) {
-            throw new RuntimeException("Email already in use: " + customer.getEmail());
+            throw new DuplicateResourceException("Email already in use: " + customer.getEmail());
         }
         if (customerRepository.existsByNationalId(customer.getNationalId())) {
-            throw new RuntimeException("National ID already registered: " + customer.getNationalId());
+            throw new DuplicateResourceException("National ID already registered: " + customer.getNationalId());
         }
         return customerRepository.save(customer);
     }
 
     public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
     }
 
     public List<Customer> getAllCustomers() {

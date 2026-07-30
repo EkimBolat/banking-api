@@ -2,6 +2,9 @@ package com.ekim.bankingapi.transaction;
 
 import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountRepository;
+import com.ekim.bankingapi.exception.InsufficientBalanceException;
+import com.ekim.bankingapi.exception.InvalidRequestException;
+import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,7 @@ public class TransactionService {
         validateAmount(amount);
 
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found with id: " + accountId));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
 
         BigDecimal newBalance = account.getBalance().add(amount);
         account.setBalance(newBalance);
@@ -35,10 +38,10 @@ public class TransactionService {
         validateAmount(amount);
 
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found with id: " + accountId));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
 
         if (account.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Insufficient balance. Current balance: " + account.getBalance());
+            throw new InsufficientBalanceException("Insufficient balance. Current balance: " + account.getBalance());
         }
 
         BigDecimal newBalance = account.getBalance().subtract(amount);
@@ -63,7 +66,7 @@ public class TransactionService {
 
     private void validateAmount(BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Amount must be greater than zero");
+            throw new InvalidRequestException("Amount must be greater than zero");
         }
     }
 }

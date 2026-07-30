@@ -2,6 +2,8 @@ package com.ekim.bankingapi.account;
 
 import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerRepository;
+import com.ekim.bankingapi.exception.DuplicateResourceException;
+import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,10 @@ public class AccountService {
 
     public Account createAccount(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + customerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
 
         if (accountRepository.existsByCustomerId(customerId)) {
-            throw new RuntimeException("Customer already has an account: " + customerId);
+            throw new DuplicateResourceException("Customer already has an account: " + customerId);
         }
 
         Account account = new Account();
@@ -35,12 +37,12 @@ public class AccountService {
 
     public Account getAccountById(Long id) {
         return accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
     }
 
     public Account getAccountByNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found: " + accountNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + accountNumber));
     }
 
     public List<Account> getAllAccounts() {
