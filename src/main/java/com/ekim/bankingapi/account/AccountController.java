@@ -15,23 +15,23 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/customer/{customerId}")
-    public ResponseEntity<Account> createAccount(@PathVariable Long customerId) {
-        Account created = accountService.createAccount(customerId);
+    public ResponseEntity<AccountResponse> createAccount(@PathVariable Long customerId) {
+        AccountResponse created = accountService.createAccount(customerId);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
         return ResponseEntity.ok(accountService.getAccountById(id));
     }
 
     @GetMapping("/number/{accountNumber}")
-    public ResponseEntity<Account> getAccountByNumber(@PathVariable String accountNumber) {
+    public ResponseEntity<AccountResponse> getAccountByNumber(@PathVariable String accountNumber) {
         return ResponseEntity.ok(accountService.getAccountByNumber(accountNumber));
     }
 
     @GetMapping
-    public ResponseEntity<List<Account>> getAllAccounts() {
+    public ResponseEntity<List<AccountResponse>> getAllAccounts() {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 }

@@ -13,37 +13,58 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    public Customer createCustomer(Customer customer) {
-        if (customerRepository.existsByEmail(customer.getEmail())) {
-            throw new DuplicateResourceException("Email already in use: " + customer.getEmail());
+    public CustomerResponse createCustomer(CustomerRequest request) {
+        if (customerRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("Email already in use: " + request.getEmail());
         }
-        if (customerRepository.existsByNationalId(customer.getNationalId())) {
-            throw new DuplicateResourceException("National ID already registered: " + customer.getNationalId());
+        if (customerRepository.existsByNationalId(request.getNationalId())) {
+            throw new DuplicateResourceException("National ID already registered: " + request.getNationalId());
         }
-        return customerRepository.save(customer);
+
+        Customer customer = new Customer();
+        customer.setFirstName(request.getFirstName());
+        customer.setLastName(request.getLastName());
+        customer.setEmail(request.getEmail());
+        customer.setPhoneNumber(request.getPhoneNumber());
+        customer.setNationalId(request.getNationalId());
+        customer.setAge(request.getAge());
+        customer.setAddress(request.getAddress());
+
+        Customer saved = customerRepository.save(customer);
+        return CustomerResponse.fromEntity(saved);
     }
 
-    public Customer getCustomerById(Long id) {
-        return customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+    public CustomerResponse getCustomerById(Long id) {
+        Customer customer = findCustomerEntityById(id);
+        return CustomerResponse.fromEntity(customer);
     }
 
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerResponse> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(CustomerResponse::fromEntity)
+                .toList();
     }
 
-    public Customer updateCustomer(Long id, Customer updatedData) {
-        Customer existing = getCustomerById(id);
-        existing.setFirstName(updatedData.getFirstName());
-        existing.setLastName(updatedData.getLastName());
-        existing.setPhoneNumber(updatedData.getPhoneNumber());
-        existing.setAge(updatedData.getAge());
-        existing.setAddress(updatedData.getAddress());
-        return customerRepository.save(existing);
+    public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
+        Customer existing = findCustomerEntityById(id);
+        existing.setFirstName(request.getFirstName());
+        existing.setLastName(request.getLastName());
+        existing.setPhoneNumber(request.getPhoneNumber());
+        existing.setAge(request.getAge());
+        existing.setAddress(request.getAddress());
+
+        Customer saved = customerRepository.save(existing);
+        return CustomerResponse.fromEntity(saved);
     }
 
     public void deleteCustomer(Long id) {
-        Customer existing = getCustomerById(id);
+        Customer existing = findCustomerEntityById(id);
         customerRepository.delete(existing);
+    }
+
+    // Diğer feature'lar (Account, Auth) Customer entity'sine ihtiyaç duyduğu için bunu koruyoruz
+    public Customer findCustomerEntityById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
     }
 }

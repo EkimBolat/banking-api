@@ -1,7 +1,7 @@
 package com.ekim.bankingapi.account;
 
 import com.ekim.bankingapi.customer.Customer;
-import com.ekim.bankingapi.customer.CustomerRepository;
+import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,11 @@ import java.util.List;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    public Account createAccount(Long customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+    public AccountResponse createAccount(Long customerId) {
+        Customer customer = customerService.findCustomerEntityById(customerId);
 
         if (accountRepository.existsByCustomerId(customerId)) {
             throw new DuplicateResourceException("Customer already has an account: " + customerId);
@@ -32,21 +31,25 @@ public class AccountService {
         account.setBalance(BigDecimal.ZERO);
         account.setAccountNumber(generateUniqueAccountNumber());
 
-        return accountRepository.save(account);
+        Account saved = accountRepository.save(account);
+        return AccountResponse.fromEntity(saved);
     }
 
-    public Account getAccountById(Long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
+    public AccountResponse getAccountById(Long id) {
+        Account account = findAccountEntityById(id);
+        return AccountResponse.fromEntity(account);
     }
 
-    public Account getAccountByNumber(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber)
+    public AccountResponse getAccountByNumber(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + accountNumber));
+        return AccountResponse.fromEntity(account);
     }
 
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    public List<AccountResponse> getAllAccounts() {
+        return accountRepository.findAll().stream()
+                .map(AccountResponse::fromEntity)
+                .toList();
     }
 
     private String generateUniqueAccountNumber() {
@@ -63,5 +66,11 @@ public class AccountService {
             sb.append(RANDOM.nextInt(10));
         }
         return sb.toString();
+    }
+
+    // Transaction ve Transfer service'leri Account entity'sine ihtiyaç duyduğu için bunu koruyoruz
+    public Account findAccountEntityById(Long id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
     }
 }

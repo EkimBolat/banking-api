@@ -1,10 +1,9 @@
 package com.ekim.bankingapi.auth;
 
 import com.ekim.bankingapi.customer.Customer;
-import com.ekim.bankingapi.customer.CustomerRepository;
+import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.InvalidCredentialsException;
-import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,36 +13,37 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
 
-    public User register(Long customerId, String email, String rawPassword) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+    public AuthResponse register(RegisterRequest request) {
+        Customer customer = customerService.findCustomerEntityById(request.getCustomerId());
 
-        if (userRepository.existsByCustomerId(customerId)) {
+        if (userRepository.existsByCustomerId(request.getCustomerId())) {
             throw new DuplicateResourceException("This customer already has a login account");
         }
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateResourceException("Email already in use: " + email);
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("Email already in use: " + request.getEmail());
         }
 
         User user = new User();
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCustomer(customer);
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+
+        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful");
     }
 
-    public User login(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email)
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        return user;
+        return new AuthResponse(user.getId(), user.getCustomer().getId(), user.getEmail(), "Login successful");
     }
 }

@@ -1,11 +1,13 @@
 package com.ekim.bankingapi.auth;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -15,31 +17,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, Object> body) {
-        Long customerId = Long.valueOf(body.get("customerId").toString());
-        String email = body.get("email").toString();
-        String password = body.get("password").toString();
-
-        User user = authService.register(customerId, email, password);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "id", user.getId(),
-                "email", user.getEmail(),
-                "customerId", user.getCustomer().getId()
-        ));
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> body) {
-        String email = body.get("email").toString();
-        String password = body.get("password").toString();
-
-        User user = authService.login(email, password);
-
-        return ResponseEntity.ok(Map.of(
-                "message", "Login successful",
-                "userId", user.getId(),
-                "customerId", user.getCustomer().getId()
-        ));
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,12 +1,13 @@
 package com.ekim.bankingapi.transfer;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/transfers")
@@ -16,12 +17,8 @@ public class TransferController {
     private final TransferService transferService;
 
     @PostMapping
-    public ResponseEntity<Transfer> transfer(@RequestBody Map<String, Object> body) {
-        Long fromAccountId = Long.valueOf(body.get("fromAccountId").toString());
-        Long toAccountId = Long.valueOf(body.get("toAccountId").toString());
-        BigDecimal amount = new BigDecimal(body.get("amount").toString());
-
-        Transfer result = transferService.transfer(fromAccountId, toAccountId, amount);
+    public ResponseEntity<TransferResponse> transfer(@Valid @RequestBody TransferRequest request) {
+        TransferResponse result = transferService.transfer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

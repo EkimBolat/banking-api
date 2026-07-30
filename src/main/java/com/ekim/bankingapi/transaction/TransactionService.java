@@ -1,10 +1,9 @@
 package com.ekim.bankingapi.transaction;
 
 import com.ekim.bankingapi.account.Account;
-import com.ekim.bankingapi.account.AccountRepository;
+import com.ekim.bankingapi.account.AccountService;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
-import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,28 +16,26 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Transactional
-    public Transaction deposit(Long accountId, BigDecimal amount) {
+    public TransactionResponse deposit(Long accountId, BigDecimal amount) {
         validateAmount(amount);
 
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
+        Account account = accountService.findAccountEntityById(accountId);
 
         BigDecimal newBalance = account.getBalance().add(amount);
         account.setBalance(newBalance);
-        accountRepository.save(account);
 
-        return saveTransaction(account, TransactionType.DEPOSIT, amount, newBalance);
+        Transaction transaction = saveTransaction(account, TransactionType.DEPOSIT, amount, newBalance);
+        return TransactionResponse.fromEntity(transaction);
     }
 
     @Transactional
-    public Transaction withdraw(Long accountId, BigDecimal amount) {
+    public TransactionResponse withdraw(Long accountId, BigDecimal amount) {
         validateAmount(amount);
 
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
+        Account account = accountService.findAccountEntityById(accountId);
 
         if (account.getBalance().compareTo(amount) < 0) {
             throw new InsufficientBalanceException("Insufficient balance. Current balance: " + account.getBalance());
@@ -46,13 +43,15 @@ public class TransactionService {
 
         BigDecimal newBalance = account.getBalance().subtract(amount);
         account.setBalance(newBalance);
-        accountRepository.save(account);
 
-        return saveTransaction(account, TransactionType.WITHDRAWAL, amount, newBalance);
+        Transaction transaction = saveTransaction(account, TransactionType.WITHDRAWAL, amount, newBalance);
+        return TransactionResponse.fromEntity(transaction);
     }
 
-    public List<Transaction> getTransactionHistory(Long accountId) {
-        return transactionRepository.findByAccountIdOrderByTimestampDesc(accountId);
+    public List<TransactionResponse> getTransactionHistory(Long accountId) {
+        return transactionRepository.findByAccountIdOrderByTimestampDesc(accountId).stream()
+                .map(TransactionResponse::fromEntity)
+                .toList();
     }
 
     private Transaction saveTransaction(Account account, TransactionType type, BigDecimal amount, BigDecimal balanceAfter) {
