@@ -1,4 +1,4 @@
-package com.ekim.bankingapi.transaction;
+package com.ekim.bankingapi.transfer;
 
 import com.ekim.bankingapi.account.Account;
 import jakarta.persistence.*;
@@ -12,12 +12,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "transfers")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Transfer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,23 +25,17 @@ public class Transaction {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @JoinColumn(name = "from_account_id", nullable = false)
+    private Account fromAccount;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TransactionType type;
+    @ManyToOne
+    @JoinColumn(name = "to_account_id", nullable = false)
+    private Account toAccount;
 
     @NotNull
     @Column(nullable = false)
     private BigDecimal amount;
-
-    @NotNull
-    @Column(nullable = false)
-    private BigDecimal balanceAfter;
-
-    private Long transferId;
 
     @Column(updatable = false)
     private LocalDateTime timestamp;

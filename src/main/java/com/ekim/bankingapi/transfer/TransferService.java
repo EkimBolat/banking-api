@@ -1,0 +1,66 @@
+package com.ekim.bankingapi.transfer;
+
+import com.ekim.bankingapi.account.Account;
+import com.ekim.bankingapi.account.AccountRepository;
+import com.ekim.bankingapi.transaction.Transaction;
+import com.ekim.bankingapi.transaction.TransactionRepository;
+import com.ekim.bankingapi.transaction.TransactionType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+
+@Service
+@RequiredArgsConstructor
+public class TransferService {
+
+    private final TransferRepository transferRepository;
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
+
+    @Transactional
+    public Transfer transfer(Long fromAccountId, Long toAccountId, BigDecimal amount) {
+        if (fromAccountId.equals(toAccountId)) {
+            throw new RuntimeException("Cannot transfer to the same account");
+        }
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Amount must be greater than zero");
+        }
+
+        Account fromAccount = accountRepository.findById(fromAccountId)
+                .orElseThrow(() -> new RuntimeException("Source account not found: " + fromAccountId));
+        Account toAccount = accountRepository.findById(toAccountId)
+                .orElseThrow(() -> new RuntimeException("Destination account not found: " + toAccountId));
+
+        if (fromAccount.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient balance in source account");
+        }
+
+        fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
+        toAccount.setBalance(toAccount.getBalance().add(amount));
+        accountRepository.save(fromAccount);
+        accountRepository.save(toAccount);
+
+        Transfer transfer = new Transfer();
+        transfer.setFromAccount(fromAccount);
+        transfer.setToAccount(toAccount);
+        transfer.setAmount(amount);
+        Transfer savedTransfer = transferRepository.save(transfer);
+
+        recordTransaction(fromAccount, TransactionType.WITHDRAWAL, amount, fromAccount.getBalance(), savedTransfer.getId());
+        recordTransaction(toAccount, TransactionType.DEPOSIT, amount, toAccount.getBalance(), savedTransfer.getId());
+
+        return savedTransfer;
+    }
+
+    private void recordTransaction(Account account, TransactionType type, BigDecimal amount, BigDecimal balanceAfter, Long transferId) {
+        Transaction transaction = new Transaction();
+        transaction.setAccount(account);
+        transaction.setType(type);
+        transaction.setAmount(amount);
+        transaction.setBalanceAfter(balanceAfter);
+        transaction.setTransferId(transferId);
+        transactionRepository.save(transaction);
+    }
+}
