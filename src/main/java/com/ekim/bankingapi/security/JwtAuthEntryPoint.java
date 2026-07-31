@@ -1,6 +1,8 @@
 package com.ekim.bankingapi.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,9 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         body.put("message", "Authentication token is missing or invalid");
         body.put("path", request.getRequestURI());
 
-        new ObjectMapper().registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
-                .writeValue(response.getOutputStream(), body);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.writeValue(response.getOutputStream(), body);
     }
 }
