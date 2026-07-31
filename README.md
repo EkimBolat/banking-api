@@ -24,4 +24,4 @@ A RESTful Banking API built with **Spring Boot**, **PostgreSQL**, and **Spring D
 
 ---
 
-📌 **Status:** Under Development
+📌 **Status:** Core banking features complete — actively expanding functionality
