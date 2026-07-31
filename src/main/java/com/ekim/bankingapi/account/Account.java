@@ -31,6 +31,13 @@ public class Account {
     private BigDecimal balance = BigDecimal.ZERO;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
+    private AccountType accountType;
+
+    private BigDecimal interestRate;
+
+    @NotNull
     @OneToOne
     @JoinColumn(name = "customer_id", nullable = false, unique = true)
     private Customer customer;

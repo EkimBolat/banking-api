@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.account;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/customer/{customerId}")
-    public ResponseEntity<AccountResponse> createAccount(@PathVariable Long customerId) {
-        AccountResponse created = accountService.createAccount(customerId);
+    public ResponseEntity<AccountResponse> createAccount(@PathVariable Long customerId, @Valid @RequestBody AccountRequest request) {
+        AccountResponse created = accountService.createAccount(customerId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 

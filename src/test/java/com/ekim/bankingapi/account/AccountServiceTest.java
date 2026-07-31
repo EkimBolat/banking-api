@@ -3,6 +3,7 @@ package com.ekim.bankingapi.account;
 import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
+import com.ekim.bankingapi.exception.InvalidRequestException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,10 @@ class AccountServiceTest {
     }
 
     @Test
-    void createAccount_shouldSucceed_whenCustomerHasNoAccount() {
+    void createAccount_shouldSucceed_whenCheckingAccountWithNoInterestRate() {
+        AccountRequest request = new AccountRequest();
+        request.setAccountType(AccountType.CHECKING);
+
         when(customerService.findCustomerEntityById(1L)).thenReturn(customer);
         when(accountRepository.existsByCustomerId(1L)).thenReturn(false);
         when(accountRepository.existsByAccountNumber(anyString())).thenReturn(false);
@@ -51,20 +55,71 @@ class AccountServiceTest {
             return acc;
         });
 
-        AccountResponse response = accountService.createAccount(1L);
+        AccountResponse response = accountService.createAccount(1L, request);
 
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getBalance()).isEqualByComparingTo(BigDecimal.ZERO);
-        assertThat(response.getCustomerFullName()).isEqualTo("Ahmet Yılmaz");
-        assertThat(response.getAccountNumber()).startsWith("TR");
+        assertThat(response.getAccountType()).isEqualTo(AccountType.CHECKING);
+        assertThat(response.getInterestRate()).isNull();
+    }
+
+    @Test
+    void createAccount_shouldSucceed_whenSavingsAccountWithValidInterestRate() {
+        AccountRequest request = new AccountRequest();
+        request.setAccountType(AccountType.SAVINGS);
+        request.setInterestRate(BigDecimal.valueOf(2.5));
+
+        when(customerService.findCustomerEntityById(1L)).thenReturn(customer);
+        when(accountRepository.existsByCustomerId(1L)).thenReturn(false);
+        when(accountRepository.existsByAccountNumber(anyString())).thenReturn(false);
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> {
+            Account acc = invocation.getArgument(0);
+            acc.setId(1L);
+            return acc;
+        });
+
+        AccountResponse response = accountService.createAccount(1L, request);
+
+        assertThat(response.getAccountType()).isEqualTo(AccountType.SAVINGS);
+        assertThat(response.getInterestRate()).isEqualByComparingTo(BigDecimal.valueOf(2.5));
+    }
+
+    @Test
+    void createAccount_shouldThrow_whenSavingsAccountHasNoInterestRate() {
+        AccountRequest request = new AccountRequest();
+        request.setAccountType(AccountType.SAVINGS);
+
+        when(customerService.findCustomerEntityById(1L)).thenReturn(customer);
+        when(accountRepository.existsByCustomerId(1L)).thenReturn(false);
+
+        assertThatThrownBy(() -> accountService.createAccount(1L, request))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("require a positive interest rate");
+
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void createAccount_shouldThrow_whenCheckingAccountHasInterestRate() {
+        AccountRequest request = new AccountRequest();
+        request.setAccountType(AccountType.CHECKING);
+        request.setInterestRate(BigDecimal.valueOf(1.0));
+
+        when(customerService.findCustomerEntityById(1L)).thenReturn(customer);
+        when(accountRepository.existsByCustomerId(1L)).thenReturn(false);
+
+        assertThatThrownBy(() -> accountService.createAccount(1L, request))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("cannot have an interest rate");
     }
 
     @Test
     void createAccount_shouldThrow_whenCustomerAlreadyHasAccount() {
+        AccountRequest request = new AccountRequest();
+        request.setAccountType(AccountType.CHECKING);
+
         when(customerService.findCustomerEntityById(1L)).thenReturn(customer);
         when(accountRepository.existsByCustomerId(1L)).thenReturn(true);
 
-        assertThatThrownBy(() -> accountService.createAccount(1L))
+        assertThatThrownBy(() -> accountService.createAccount(1L, request))
                 .isInstanceOf(DuplicateResourceException.class)
                 .hasMessageContaining("already has an account");
 
