@@ -8,11 +8,13 @@ import com.ekim.bankingapi.transaction.Transaction;
 import com.ekim.bankingapi.transaction.TransactionRepository;
 import com.ekim.bankingapi.transaction.TransactionType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransferService {
@@ -28,6 +30,7 @@ public class TransferService {
         BigDecimal amount = request.getAmount();
 
         if (fromAccountId.equals(toAccountId)) {
+            log.warn("Transfer rejected - same account: accountId={}", fromAccountId);
             throw new InvalidRequestException("Cannot transfer to the same account");
         }
 
@@ -35,6 +38,8 @@ public class TransferService {
         Account toAccount = accountService.findAccountEntityById(toAccountId);
 
         if (fromAccount.getBalance().compareTo(amount) < 0) {
+            log.warn("Transfer rejected - insufficient balance: fromAccountId={}, requested={}, available={}",
+                    fromAccountId, amount, fromAccount.getBalance());
             throw new InsufficientBalanceException("Insufficient balance in source account");
         }
 
@@ -49,6 +54,9 @@ public class TransferService {
 
         recordTransaction(fromAccount, TransactionType.WITHDRAWAL, amount, fromAccount.getBalance(), savedTransfer.getId());
         recordTransaction(toAccount, TransactionType.DEPOSIT, amount, toAccount.getBalance(), savedTransfer.getId());
+
+        log.info("Transfer successful: transferId={}, fromAccountId={}, toAccountId={}, amount={}",
+                savedTransfer.getId(), fromAccountId, toAccountId, amount);
 
         return TransferResponse.fromEntity(savedTransfer);
     }

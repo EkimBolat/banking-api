@@ -5,12 +5,14 @@ import com.ekim.bankingapi.account.AccountService;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -28,6 +30,7 @@ public class TransactionService {
         account.setBalance(newBalance);
 
         Transaction transaction = saveTransaction(account, TransactionType.DEPOSIT, amount, newBalance);
+        log.info("Deposit successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }
 
@@ -38,6 +41,8 @@ public class TransactionService {
         Account account = accountService.findAccountEntityById(accountId);
 
         if (account.getBalance().compareTo(amount) < 0) {
+            log.warn("Withdrawal failed - insufficient balance: accountId={}, requested={}, available={}",
+                    accountId, amount, account.getBalance());
             throw new InsufficientBalanceException("Insufficient balance. Current balance: " + account.getBalance());
         }
 
@@ -45,6 +50,7 @@ public class TransactionService {
         account.setBalance(newBalance);
 
         Transaction transaction = saveTransaction(account, TransactionType.WITHDRAWAL, amount, newBalance);
+        log.info("Withdrawal successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }
 
