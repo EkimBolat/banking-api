@@ -29,4 +29,6 @@ public class CustomerRequest {
     private Integer age;
 
     private String address;
+
+    private Long branchId;
 }

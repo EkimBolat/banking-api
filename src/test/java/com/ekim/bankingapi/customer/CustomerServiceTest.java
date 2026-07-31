@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.customer;
 
+import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,9 @@ class CustomerServiceTest {
 
     @Mock
     private CustomerRepository customerRepository;
+
+    @Mock
+    private BranchService branchService;
 
     @InjectMocks
     private CustomerService customerService;
@@ -52,6 +56,7 @@ class CustomerServiceTest {
 
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getEmail()).isEqualTo("ahmet@example.com");
+        assertThat(response.getBranchId()).isNull();
         verify(customerRepository).save(any(Customer.class));
     }
 

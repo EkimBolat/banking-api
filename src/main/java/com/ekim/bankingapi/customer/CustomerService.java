@@ -1,5 +1,7 @@
 package com.ekim.bankingapi.customer;
 
+import com.ekim.bankingapi.branch.Branch;
+import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final BranchService branchService;
 
     public CustomerResponse createCustomer(CustomerRequest request) {
         if (customerRepository.existsByEmail(request.getEmail())) {
@@ -29,6 +32,11 @@ public class CustomerService {
         customer.setNationalId(request.getNationalId());
         customer.setAge(request.getAge());
         customer.setAddress(request.getAddress());
+
+        if (request.getBranchId() != null) {
+            Branch branch = branchService.findBranchEntityById(request.getBranchId());
+            customer.setBranch(branch);
+        }
 
         Customer saved = customerRepository.save(customer);
         return CustomerResponse.fromEntity(saved);
@@ -52,6 +60,11 @@ public class CustomerService {
         existing.setPhoneNumber(request.getPhoneNumber());
         existing.setAge(request.getAge());
         existing.setAddress(request.getAddress());
+
+        if (request.getBranchId() != null) {
+            Branch branch = branchService.findBranchEntityById(request.getBranchId());
+            existing.setBranch(branch);
+        }
 
         Customer saved = customerRepository.save(existing);
         return CustomerResponse.fromEntity(saved);

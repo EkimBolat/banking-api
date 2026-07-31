@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.customer;
 
+import com.ekim.bankingapi.branch.Branch;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,10 @@ public class Customer {
     private Integer age;
 
     private String address;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

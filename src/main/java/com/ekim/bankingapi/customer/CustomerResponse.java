@@ -17,6 +17,8 @@ public class CustomerResponse {
     private String nationalId;
     private Integer age;
     private String address;
+    private Long branchId;
+    private String branchName;
     private LocalDateTime createdAt;
 
     public static CustomerResponse fromEntity(Customer customer) {
@@ -29,6 +31,8 @@ public class CustomerResponse {
                 customer.getNationalId(),
                 customer.getAge(),
                 customer.getAddress(),
+                customer.getBranch() != null ? customer.getBranch().getId() : null,
+                customer.getBranch() != null ? customer.getBranch().getName() : null,
                 customer.getCreatedAt()
         );
     }
