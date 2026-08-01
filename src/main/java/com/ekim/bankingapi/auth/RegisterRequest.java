@@ -2,7 +2,6 @@ package com.ekim.bankingapi.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,8 +9,8 @@ import lombok.Setter;
 @Setter
 public class RegisterRequest {
 
-    @NotNull(message = "Customer id is required")
-    private Long customerId;
+    @NotBlank(message = "National ID is required")
+    private String nationalId;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")

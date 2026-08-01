@@ -4,7 +4,9 @@ import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.InvalidCredentialsException;
+import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import com.ekim.bankingapi.security.JwtService;
+import com.ekim.bankingapi.security.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,12 +21,13 @@ public class AuthService {
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LoginAttemptService loginAttemptService;
 
     public AuthResponse register(RegisterRequest request) {
-        Customer customer = customerService.findCustomerEntityById(request.getCustomerId());
+        Customer customer = customerService.findCustomerEntityByNationalId(request.getNationalId());
 
-        if (userRepository.existsByCustomerId(request.getCustomerId())) {
-            log.warn("Registration rejected - customer already has account: customerId={}", request.getCustomerId());
+        if (userRepository.existsByCustomerId(customer.getId())) {
+            log.warn("Registration rejected - customer already has account: nationalId={}", request.getNationalId());
             throw new DuplicateResourceException("This customer already has a login account");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -47,21 +50,38 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        String nationalId = request.getNationalId();
+
+        loginAttemptService.checkNotLocked(nationalId);
+
+        Customer customer;
+        try {
+            customer = customerService.findCustomerEntityByNationalId(nationalId);
+        } catch (ResourceNotFoundException ex) {
+            log.warn("Login failed - national ID not found: nationalId={}", nationalId);
+            loginAttemptService.recordFailedAttempt(nationalId);
+            throw new InvalidCredentialsException("Invalid national ID or password");
+        }
+
+        User user = userRepository.findByCustomerId(customer.getId())
                 .orElseThrow(() -> {
-                    log.warn("Login failed - email not found: email={}", request.getEmail());
-                    return new InvalidCredentialsException("Invalid email or password");
+                    log.warn("Login failed - no account for national ID: nationalId={}", nationalId);
+                    loginAttemptService.recordFailedAttempt(nationalId);
+                    return new InvalidCredentialsException("Invalid national ID or password");
                 });
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            log.warn("Login failed - wrong password: email={}", request.getEmail());
-            throw new InvalidCredentialsException("Invalid email or password");
+            log.warn("Login failed - wrong password: nationalId={}", nationalId);
+            loginAttemptService.recordFailedAttempt(nationalId);
+            throw new InvalidCredentialsException("Invalid national ID or password");
         }
 
-        String token = jwtService.generateToken(user.getEmail(), user.getId(), user.getCustomer().getId());
+        loginAttemptService.recordSuccessfulLogin(nationalId);
 
-        log.info("Login successful: userId={}, email={}", user.getId(), user.getEmail());
+        String token = jwtService.generateToken(user.getEmail(), user.getId(), customer.getId());
 
-        return new AuthResponse(user.getId(), user.getCustomer().getId(), user.getEmail(), "Login successful", token);
+        log.info("Login successful: userId={}, nationalId={}", user.getId(), nationalId);
+
+        return new AuthResponse(user.getId(), customer.getId(), user.getEmail(), "Login successful", token);
     }
 }
