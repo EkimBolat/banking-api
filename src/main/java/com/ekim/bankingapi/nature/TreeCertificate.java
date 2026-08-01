@@ -28,6 +28,13 @@ public class TreeCertificate {
     @Column(nullable = false, unique = true)
     private String certificateNumber;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TreeSpecies species;
+
+    @Column(nullable = false)
+    private String plantingRegion;
+
     @Column(updatable = false)
     private LocalDateTime plantedAt;
 

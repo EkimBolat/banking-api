@@ -1,8 +1,2 @@
-POST http://localhost:8080/api/accounts/customer/10
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaG1ldEBleGFtcGxlLmNvbSIsInVzZXJJZCI6MSwiY3VzdG9tZXJJZCI6MSwiaWF0IjoxNzg1NTg2NjQyLCJleHAiOjE3ODU2NzMwNDJ9.RPdKzf7NctsSY4Et7D4Mod_qPl6nLGOXZkrvpAiV99w
-
-{
-  "accountType": "CHECKING",
-  "branchId": 2
-}
+GET http://localhost:8080/api/nature/certificates/customer/7
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaG1ldEBleGFtcGxlLmNvbSIsInVzZXJJZCI6MSwiY3VzdG9tZXJJZCI6MSwiaWF0IjoxNzg1NTg3MDgzLCJleHAiOjE3ODU2NzM0ODN9.dCC6J1o-B8RgGYSvzGJTuRoMPKD4GLJh7G-QwS5pCNg

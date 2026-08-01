@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -16,6 +17,16 @@ public class NatureService {
 
     private static final int POINTS_PER_TRANSACTION = 5;
     private static final int POINTS_PER_TREE = 100;
+
+    private static final String[] PLANTING_REGIONS = {
+            "Karadeniz Ormanları",
+            "Ege Makilikleri",
+            "İç Anadolu Bozkırı",
+            "Akdeniz Kıyı Şeridi",
+            "Doğu Anadolu Yaylaları"
+    };
+
+    private static final Random RANDOM = new Random();
 
     private final CustomerService customerService;
     private final TreeCertificateRepository treeCertificateRepository;
@@ -49,13 +60,25 @@ public class NatureService {
         TreeCertificate certificate = new TreeCertificate();
         certificate.setCustomer(customer);
         certificate.setCertificateNumber(generateCertificateNumber());
+        certificate.setSpecies(pickRandomSpecies());
+        certificate.setPlantingRegion(pickRandomRegion());
         treeCertificateRepository.save(certificate);
 
-        log.info("Tree planted! customerId={}, certificateNumber={}", customer.getId(), certificate.getCertificateNumber());
+        log.info("Tree planted! customerId={}, certificateNumber={}, species={}, region={}",
+                customer.getId(), certificate.getCertificateNumber(), certificate.getSpecies(), certificate.getPlantingRegion());
     }
 
     private String generateCertificateNumber() {
         long sequence = treeCertificateRepository.count() + 1;
         return String.format("TREE-%d-%06d", Year.now().getValue(), sequence);
+    }
+
+    private TreeSpecies pickRandomSpecies() {
+        TreeSpecies[] species = TreeSpecies.values();
+        return species[RANDOM.nextInt(species.length)];
+    }
+
+    private String pickRandomRegion() {
+        return PLANTING_REGIONS[RANDOM.nextInt(PLANTING_REGIONS.length)];
     }
 }

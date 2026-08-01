@@ -13,6 +13,8 @@ public class TreeCertificateResponse {
     private Long customerId;
     private String customerFullName;
     private String certificateNumber;
+    private TreeSpecies species;
+    private String plantingRegion;
     private LocalDateTime plantedAt;
 
     public static TreeCertificateResponse fromEntity(TreeCertificate certificate) {
@@ -21,6 +23,8 @@ public class TreeCertificateResponse {
                 certificate.getCustomer().getId(),
                 certificate.getCustomer().getFirstName() + " " + certificate.getCustomer().getLastName(),
                 certificate.getCertificateNumber(),
+                certificate.getSpecies(),
+                certificate.getPlantingRegion(),
                 certificate.getPlantedAt()
         );
     }
