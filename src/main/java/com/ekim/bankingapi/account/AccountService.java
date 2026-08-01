@@ -1,5 +1,7 @@
 package com.ekim.bankingapi.account;
 
+import com.ekim.bankingapi.branch.Branch;
+import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
@@ -18,6 +20,7 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final CustomerService customerService;
+    private final BranchService branchService;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     public AccountResponse createAccount(Long customerId, AccountRequest request) {
@@ -35,6 +38,11 @@ public class AccountService {
         account.setAccountNumber(generateUniqueAccountNumber());
         account.setAccountType(request.getAccountType());
         account.setInterestRate(request.getAccountType() == AccountType.SAVINGS ? request.getInterestRate() : null);
+
+        if (request.getBranchId() != null) {
+            Branch branch = branchService.findBranchEntityById(request.getBranchId());
+            account.setBranch(branch);
+        }
 
         Account saved = accountRepository.save(account);
         return AccountResponse.fromEntity(saved);

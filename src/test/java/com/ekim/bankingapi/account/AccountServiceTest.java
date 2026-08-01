@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.account;
 
+import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
@@ -27,6 +28,9 @@ class AccountServiceTest {
 
     @Mock
     private CustomerService customerService;
+
+    @Mock
+    private BranchService branchService;
 
     @InjectMocks
     private AccountService accountService;
@@ -59,6 +63,7 @@ class AccountServiceTest {
 
         assertThat(response.getAccountType()).isEqualTo(AccountType.CHECKING);
         assertThat(response.getInterestRate()).isNull();
+        assertThat(response.getBranchId()).isNull();
     }
 
     @Test

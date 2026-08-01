@@ -15,6 +15,8 @@ public class AccountResponse {
     private BigDecimal balance;
     private AccountType accountType;
     private BigDecimal interestRate;
+    private Long branchId;
+    private String branchName;
     private Long customerId;
     private String customerFullName;
     private LocalDateTime createdAt;
@@ -26,6 +28,8 @@ public class AccountResponse {
                 account.getBalance(),
                 account.getAccountType(),
                 account.getInterestRate(),
+                account.getBranch() != null ? account.getBranch().getId() : null,
+                account.getBranch() != null ? account.getBranch().getName() : null,
                 account.getCustomer().getId(),
                 account.getCustomer().getFirstName() + " " + account.getCustomer().getLastName(),
                 account.getCreatedAt()

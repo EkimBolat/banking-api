@@ -14,4 +14,6 @@ public class AccountRequest {
     private AccountType accountType;
 
     private BigDecimal interestRate;
+
+    private Long branchId;
 }

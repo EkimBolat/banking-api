@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.account;
 
+import com.ekim.bankingapi.branch.Branch;
 import com.ekim.bankingapi.customer.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -36,6 +37,10 @@ public class Account {
     private AccountType accountType;
 
     private BigDecimal interestRate;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
     @NotNull
     @OneToOne

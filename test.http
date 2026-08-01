@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/accounts/customer/10
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaG1ldEBleGFtcGxlLmNvbSIsInVzZXJJZCI6MSwiY3VzdG9tZXJJZCI6MSwiaWF0IjoxNzg1NTg2NjQyLCJleHAiOjE3ODU2NzMwNDJ9.RPdKzf7NctsSY4Et7D4Mod_qPl6nLGOXZkrvpAiV99w
+
+{
+  "accountType": "CHECKING",
+  "branchId": 2
+}
