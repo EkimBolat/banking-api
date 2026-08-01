@@ -57,8 +57,8 @@ public class TransferService {
         recordTransaction(fromAccount, TransactionType.WITHDRAWAL, amount, fromAccount.getBalance(), savedTransfer.getId());
         recordTransaction(toAccount, TransactionType.DEPOSIT, amount, toAccount.getBalance(), savedTransfer.getId());
 
-        natureService.awardPointsForTransaction(fromAccount.getCustomer().getId());
-        natureService.awardPointsForTransaction(toAccount.getCustomer().getId());
+        natureService.awardPointsForTransaction(fromAccount.getCustomer().getId(), amount);
+        natureService.awardPointsForTransaction(toAccount.getCustomer().getId(), amount);
 
         log.info("Transfer successful: transferId={}, fromAccountId={}, toAccountId={}, amount={}",
                 savedTransfer.getId(), fromAccountId, toAccountId, amount);

@@ -32,7 +32,7 @@ public class TransactionService {
         account.setBalance(newBalance);
 
         Transaction transaction = saveTransaction(account, TransactionType.DEPOSIT, amount, newBalance);
-        natureService.awardPointsForTransaction(account.getCustomer().getId());
+        natureService.awardPointsForTransaction(account.getCustomer().getId(), amount);
         log.info("Deposit successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }
@@ -53,7 +53,7 @@ public class TransactionService {
         account.setBalance(newBalance);
 
         Transaction transaction = saveTransaction(account, TransactionType.WITHDRAWAL, amount, newBalance);
-        natureService.awardPointsForTransaction(account.getCustomer().getId());
+        natureService.awardPointsForTransaction(account.getCustomer().getId(), amount);
         log.info("Withdrawal successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }

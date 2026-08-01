@@ -1,0 +1,2 @@
+GET http://localhost:8080/api/customers/11
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaG1ldEBleGFtcGxlLmNvbSIsInVzZXJJZCI6MSwiY3VzdG9tZXJJZCI6MSwiaWF0IjoxNzg1NTg5NDYxLCJleHAiOjE3ODU2NzU4NjF9.BkBaZtKk65GtbhewNOO7ZKgmCE75YgXNpOWyTSdMbVA

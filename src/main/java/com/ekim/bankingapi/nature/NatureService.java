@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +19,8 @@ public class NatureService {
 
     private static final int POINTS_PER_TRANSACTION = 5;
     private static final int POINTS_PER_TREE = 100;
+    private static final BigDecimal MIN_AMOUNT_FOR_POINTS = BigDecimal.valueOf(50);
+    private static final int DAILY_POINTS_CAP = 50;
 
     private static final String[] PLANTING_REGIONS = {
             "Karadeniz Ormanları",
@@ -31,10 +35,26 @@ public class NatureService {
     private final CustomerService customerService;
     private final TreeCertificateRepository treeCertificateRepository;
 
-    public void awardPointsForTransaction(Long customerId) {
+    public void awardPointsForTransaction(Long customerId, BigDecimal amount) {
+        if (amount.compareTo(MIN_AMOUNT_FOR_POINTS) < 0) {
+            log.info("No nature points awarded - amount below minimum: customerId={}, amount={}", customerId, amount);
+            return;
+        }
+
         Customer customer = customerService.findCustomerEntityById(customerId);
 
-        int totalPoints = customer.getNaturePoints() + POINTS_PER_TRANSACTION;
+        resetDailyCounterIfNewDay(customer);
+
+        if (customer.getDailyNaturePoints() >= DAILY_POINTS_CAP) {
+            log.info("No nature points awarded - daily cap reached: customerId={}", customerId);
+            return;
+        }
+
+        int pointsToAward = Math.min(POINTS_PER_TRANSACTION, DAILY_POINTS_CAP - customer.getDailyNaturePoints());
+
+        customer.setDailyNaturePoints(customer.getDailyNaturePoints() + pointsToAward);
+
+        int totalPoints = customer.getNaturePoints() + pointsToAward;
 
         while (totalPoints >= POINTS_PER_TREE) {
             totalPoints -= POINTS_PER_TREE;
@@ -54,6 +74,14 @@ public class NatureService {
 
     public long getTotalTreesPlanted() {
         return treeCertificateRepository.count();
+    }
+
+    private void resetDailyCounterIfNewDay(Customer customer) {
+        LocalDate today = LocalDate.now();
+        if (customer.getLastPointsDate() == null || !customer.getLastPointsDate().isEqual(today)) {
+            customer.setDailyNaturePoints(0);
+            customer.setLastPointsDate(today);
+        }
     }
 
     private void plantTree(Customer customer) {

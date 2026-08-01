@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -59,6 +60,11 @@ public class Customer {
 
     @Column(nullable = false)
     private Integer treesPlanted = 0;
+
+    @Column(nullable = false)
+    private Integer dailyNaturePoints = 0;
+
+    private LocalDate lastPointsDate;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
