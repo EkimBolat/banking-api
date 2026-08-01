@@ -45,6 +45,8 @@ public class TransferService {
             throw new InsufficientBalanceException("Insufficient balance in source account");
         }
 
+        accountService.checkAndRecordWithdrawalLimit(fromAccount, amount);
+
         fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
         toAccount.setBalance(toAccount.getBalance().add(amount));
 

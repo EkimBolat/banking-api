@@ -7,11 +7,14 @@ import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
+import com.ekim.bankingapi.exception.TransactionLimitExceededException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
@@ -63,6 +66,42 @@ public class AccountService {
         return accountRepository.findAll().stream()
                 .map(AccountResponse::fromEntity)
                 .toList();
+    }
+
+    // Transaction ve Transfer service'leri, para çıkışından ÖNCE bu kontrolü çağırır
+    public void checkAndRecordWithdrawalLimit(Account account, BigDecimal amount) {
+        resetCountersIfNeeded(account);
+
+        BigDecimal newDailyTotal = account.getDailyWithdrawnAmount().add(amount);
+        if (newDailyTotal.compareTo(account.getDailyLimit()) > 0) {
+            throw new TransactionLimitExceededException(
+                    "Daily withdrawal limit exceeded. Limit: " + account.getDailyLimit() +
+                            ", already used: " + account.getDailyWithdrawnAmount());
+        }
+
+        BigDecimal newMonthlyTotal = account.getMonthlyWithdrawnAmount().add(amount);
+        if (newMonthlyTotal.compareTo(account.getMonthlyLimit()) > 0) {
+            throw new TransactionLimitExceededException(
+                    "Monthly withdrawal limit exceeded. Limit: " + account.getMonthlyLimit() +
+                            ", already used: " + account.getMonthlyWithdrawnAmount());
+        }
+
+        account.setDailyWithdrawnAmount(newDailyTotal);
+        account.setMonthlyWithdrawnAmount(newMonthlyTotal);
+    }
+
+    private void resetCountersIfNeeded(Account account) {
+        LocalDate today = LocalDate.now();
+        if (account.getLastWithdrawalDate() == null || !account.getLastWithdrawalDate().isEqual(today)) {
+            account.setDailyWithdrawnAmount(BigDecimal.ZERO);
+            account.setLastWithdrawalDate(today);
+        }
+
+        String currentMonth = YearMonth.now().toString();
+        if (account.getLastWithdrawalMonth() == null || !account.getLastWithdrawalMonth().equals(currentMonth)) {
+            account.setMonthlyWithdrawnAmount(BigDecimal.ZERO);
+            account.setLastWithdrawalMonth(currentMonth);
+        }
     }
 
     private void validateAccountTypeRules(AccountRequest request) {

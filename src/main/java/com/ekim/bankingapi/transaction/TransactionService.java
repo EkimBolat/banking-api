@@ -49,6 +49,8 @@ public class TransactionService {
             throw new InsufficientBalanceException("Insufficient balance. Current balance: " + account.getBalance());
         }
 
+        accountService.checkAndRecordWithdrawalLimit(account, amount);
+
         BigDecimal newBalance = account.getBalance().subtract(amount);
         account.setBalance(newBalance);
 

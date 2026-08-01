@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,6 +42,22 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "branch_id")
     private Branch branch;
+
+    @Column(nullable = false)
+    private BigDecimal dailyLimit = BigDecimal.valueOf(50000);
+
+    @Column(nullable = false)
+    private BigDecimal monthlyLimit = BigDecimal.valueOf(500000);
+
+    @Column(nullable = false)
+    private BigDecimal dailyWithdrawnAmount = BigDecimal.ZERO;
+
+    private LocalDate lastWithdrawalDate;
+
+    @Column(nullable = false)
+    private BigDecimal monthlyWithdrawnAmount = BigDecimal.ZERO;
+
+    private String lastWithdrawalMonth;
 
     @NotNull
     @OneToOne
