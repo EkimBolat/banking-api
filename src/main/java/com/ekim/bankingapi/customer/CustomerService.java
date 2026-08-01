@@ -80,4 +80,9 @@ public class CustomerService {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
     }
+
+    // NatureService, puan/ağaç güncellemesi sonrası customer'ı kaydetmek için kullanır
+    public Customer saveCustomerEntity(Customer customer) {
+        return customerRepository.save(customer);
+    }
 }

@@ -54,6 +54,12 @@ public class Customer {
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
+    @Column(nullable = false)
+    private Integer naturePoints = 0;
+
+    @Column(nullable = false)
+    private Integer treesPlanted = 0;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

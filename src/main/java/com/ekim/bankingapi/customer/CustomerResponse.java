@@ -19,6 +19,8 @@ public class CustomerResponse {
     private String address;
     private Long branchId;
     private String branchName;
+    private Integer naturePoints;
+    private Integer treesPlanted;
     private LocalDateTime createdAt;
 
     public static CustomerResponse fromEntity(Customer customer) {
@@ -33,6 +35,8 @@ public class CustomerResponse {
                 customer.getAddress(),
                 customer.getBranch() != null ? customer.getBranch().getId() : null,
                 customer.getBranch() != null ? customer.getBranch().getName() : null,
+                customer.getNaturePoints(),
+                customer.getTreesPlanted(),
                 customer.getCreatedAt()
         );
     }

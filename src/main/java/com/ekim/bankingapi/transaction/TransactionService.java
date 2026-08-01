@@ -4,6 +4,7 @@ import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountService;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
+import com.ekim.bankingapi.nature.NatureService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
+    private final NatureService natureService;
 
     @Transactional
     public TransactionResponse deposit(Long accountId, BigDecimal amount) {
@@ -30,6 +32,7 @@ public class TransactionService {
         account.setBalance(newBalance);
 
         Transaction transaction = saveTransaction(account, TransactionType.DEPOSIT, amount, newBalance);
+        natureService.awardPointsForTransaction(account.getCustomer().getId());
         log.info("Deposit successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }
@@ -50,6 +53,7 @@ public class TransactionService {
         account.setBalance(newBalance);
 
         Transaction transaction = saveTransaction(account, TransactionType.WITHDRAWAL, amount, newBalance);
+        natureService.awardPointsForTransaction(account.getCustomer().getId());
         log.info("Withdrawal successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }

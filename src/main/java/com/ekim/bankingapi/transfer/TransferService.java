@@ -4,6 +4,7 @@ import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountService;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
+import com.ekim.bankingapi.nature.NatureService;
 import com.ekim.bankingapi.transaction.Transaction;
 import com.ekim.bankingapi.transaction.TransactionRepository;
 import com.ekim.bankingapi.transaction.TransactionType;
@@ -22,6 +23,7 @@ public class TransferService {
     private final TransferRepository transferRepository;
     private final AccountService accountService;
     private final TransactionRepository transactionRepository;
+    private final NatureService natureService;
 
     @Transactional
     public TransferResponse transfer(TransferRequest request) {
@@ -54,6 +56,9 @@ public class TransferService {
 
         recordTransaction(fromAccount, TransactionType.WITHDRAWAL, amount, fromAccount.getBalance(), savedTransfer.getId());
         recordTransaction(toAccount, TransactionType.DEPOSIT, amount, toAccount.getBalance(), savedTransfer.getId());
+
+        natureService.awardPointsForTransaction(fromAccount.getCustomer().getId());
+        natureService.awardPointsForTransaction(toAccount.getCustomer().getId());
 
         log.info("Transfer successful: transferId={}, fromAccountId={}, toAccountId={}, amount={}",
                 savedTransfer.getId(), fromAccountId, toAccountId, amount);
