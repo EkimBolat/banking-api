@@ -1,2 +1,0 @@
-GET http://localhost:8080/api/nature/certificates/customer/7
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhaG1ldEBleGFtcGxlLmNvbSIsInVzZXJJZCI6MSwiY3VzdG9tZXJJZCI6MSwiaWF0IjoxNzg1NTg1NTk4LCJleHAiOjE3ODU2NzE5OTh9.aXBfNrKay3polW_mVb51dvs8B-r-gU-Z7q5Se-3DNcg
