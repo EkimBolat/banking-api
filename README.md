@@ -32,7 +32,8 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - [x] Account Types (Checking / Savings with interest rate)
 - [x] Branch Management
 - [x] Nature Points & Tree Certificates
-
+- [x] Account-Branch Assignment
+- [x] Login with National ID + Brute-Force Protection
 ---
 
 📌 **Status:** Core banking features complete — actively expanding functionality
