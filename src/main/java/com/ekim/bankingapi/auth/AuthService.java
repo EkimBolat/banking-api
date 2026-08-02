@@ -7,6 +7,7 @@ import com.ekim.bankingapi.exception.InvalidCredentialsException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import com.ekim.bankingapi.security.JwtService;
 import com.ekim.bankingapi.security.LoginAttemptService;
+import com.ekim.bankingapi.security.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final LoginAttemptService loginAttemptService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponse register(RegisterRequest request) {
         Customer customer = customerService.findCustomerEntityByNationalId(request.getNationalId());
@@ -43,10 +45,11 @@ public class AuthService {
         User saved = userRepository.save(user);
 
         String token = jwtService.generateToken(saved.getEmail(), saved.getId(), customer.getId(), saved.getRole().name());
+        String refreshToken = refreshTokenService.createRefreshToken(saved);
 
         log.info("Registration successful: userId={}, customerId={}", saved.getId(), customer.getId());
 
-        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful", token, saved.getRole());
+        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful", token, saved.getRole(), refreshToken);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -79,9 +82,21 @@ public class AuthService {
         loginAttemptService.recordSuccessfulLogin(nationalId);
 
         String token = jwtService.generateToken(user.getEmail(), user.getId(), customer.getId(), user.getRole().name());
+        String refreshToken = refreshTokenService.createRefreshToken(user);
 
         log.info("Login successful: userId={}, nationalId={}, role={}", user.getId(), nationalId, user.getRole());
 
-        return new AuthResponse(user.getId(), customer.getId(), user.getEmail(), "Login successful", token, user.getRole());
+        return new AuthResponse(user.getId(), customer.getId(), user.getEmail(), "Login successful", token, user.getRole(), refreshToken);
+    }
+
+    public AuthResponse refresh(String refreshToken) {
+        User user = refreshTokenService.validateAndGetUser(refreshToken);
+
+        String newAccessToken = jwtService.generateToken(user.getEmail(), user.getId(), user.getCustomer().getId(), user.getRole().name());
+        String newRefreshToken = refreshTokenService.createRefreshToken(user);
+
+        log.info("Token refreshed: userId={}", user.getId());
+
+        return new AuthResponse(user.getId(), user.getCustomer().getId(), user.getEmail(), "Token refreshed", newAccessToken, user.getRole(), newRefreshToken);
     }
 }

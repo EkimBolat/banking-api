@@ -7,6 +7,7 @@ import com.ekim.bankingapi.exception.InvalidCredentialsException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import com.ekim.bankingapi.security.JwtService;
 import com.ekim.bankingapi.security.LoginAttemptService;
+import com.ekim.bankingapi.security.RefreshTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +40,9 @@ class AuthServiceTest {
     @Mock
     private LoginAttemptService loginAttemptService;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -68,10 +72,12 @@ class AuthServiceTest {
             return u;
         });
         when(jwtService.generateToken(anyString(), anyLong(), anyLong(), anyString())).thenReturn("fake-jwt-token");
+        when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("fake-refresh-token");
 
         AuthResponse response = authService.register(request);
 
         assertThat(response.getToken()).isEqualTo("fake-jwt-token");
+        assertThat(response.getRefreshToken()).isEqualTo("fake-refresh-token");
         assertThat(response.getEmail()).isEqualTo("ahmet@example.com");
         verify(passwordEncoder).encode("plain-password");
     }
@@ -106,10 +112,12 @@ class AuthServiceTest {
         when(userRepository.findByCustomerId(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("plain-password", "hashed-password")).thenReturn(true);
         when(jwtService.generateToken(anyString(), anyLong(), anyLong(), anyString())).thenReturn("fake-jwt-token");
+        when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("fake-refresh-token");
 
         AuthResponse response = authService.login(request);
 
         assertThat(response.getToken()).isEqualTo("fake-jwt-token");
+        assertThat(response.getRefreshToken()).isEqualTo("fake-refresh-token");
         assertThat(response.getMessage()).isEqualTo("Login successful");
         verify(loginAttemptService).recordSuccessfulLogin("12345678901");
     }
