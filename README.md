@@ -34,6 +34,10 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - [x] Nature Points & Tree Certificates
 - [x] Account-Branch Assignment
 - [x] Login with National ID + Brute-Force Protection
+- [x] Nature Points Anti-Abuse Protection (minimum amount + daily cap)
+- [x] Daily/Monthly Withdrawal Limits (fraud prevention)
+- [x] Role-Based Access Control (Customer / Admin)
+
 ---
 
 📌 **Status:** Core banking features complete — actively expanding functionality
