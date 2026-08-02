@@ -2,8 +2,10 @@ package com.ekim.bankingapi.transaction;
 
 import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountService;
+import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
+import com.ekim.bankingapi.nature.NatureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,9 @@ class TransactionServiceTest {
     @Mock
     private AccountService accountService;
 
+    @Mock
+    private NatureService natureService;
+
     @InjectMocks
     private TransactionService transactionService;
 
@@ -33,10 +38,14 @@ class TransactionServiceTest {
 
     @BeforeEach
     void setUp() {
+        Customer customer = new Customer();
+        customer.setId(1L);
+
         account = new Account();
         account.setId(1L);
         account.setAccountNumber("TR1234567890");
         account.setBalance(BigDecimal.valueOf(500));
+        account.setCustomer(customer);
     }
 
     @Test

@@ -2,11 +2,13 @@ package com.ekim.bankingapi.transaction;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -28,7 +30,10 @@ public class TransactionController {
     }
 
     @GetMapping("/account/{accountId}")
-    public ResponseEntity<List<TransactionResponse>> getHistory(@PathVariable Long accountId) {
-        return ResponseEntity.ok(transactionService.getTransactionHistory(accountId));
+    public ResponseEntity<Page<TransactionResponse>> getHistory(
+            @PathVariable Long accountId,
+            @PageableDefault(sort = "timestamp", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(transactionService.getTransactionHistory(accountId, pageable));
     }
 }

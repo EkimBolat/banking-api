@@ -2,11 +2,11 @@ package com.ekim.bankingapi.account;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -32,8 +32,8 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountResponse>> getAllAccounts() {
-        return ResponseEntity.ok(accountService.getAllAccounts());
+    public ResponseEntity<Page<AccountResponse>> getAllAccounts(Pageable pageable) {
+        return ResponseEntity.ok(accountService.getAllAccounts(pageable));
     }
 
     @PutMapping("/{id}/limits")

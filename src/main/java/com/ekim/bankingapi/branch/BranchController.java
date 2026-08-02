@@ -2,11 +2,11 @@ package com.ekim.bankingapi.branch;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/branches")
@@ -27,7 +27,7 @@ public class BranchController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BranchResponse>> getAllBranches() {
-        return ResponseEntity.ok(branchService.getAllBranches());
+    public ResponseEntity<Page<BranchResponse>> getAllBranches(Pageable pageable) {
+        return ResponseEntity.ok(branchService.getAllBranches(pageable));
     }
 }

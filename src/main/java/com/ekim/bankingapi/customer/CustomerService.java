@@ -5,9 +5,9 @@ import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,10 +47,9 @@ public class CustomerService {
         return CustomerResponse.fromEntity(customer);
     }
 
-    public List<CustomerResponse> getAllCustomers() {
-        return customerRepository.findAll().stream()
-                .map(CustomerResponse::fromEntity)
-                .toList();
+    public Page<CustomerResponse> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+                .map(CustomerResponse::fromEntity);
     }
 
     public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
@@ -75,7 +74,6 @@ public class CustomerService {
         customerRepository.delete(existing);
     }
 
-    // Diğer feature'lar (Account, Auth) Customer entity'sine ihtiyaç duyduğu için bunu koruyoruz
     public Customer findCustomerEntityById(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
@@ -86,7 +84,6 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with national ID: " + nationalId));
     }
 
-    // NatureService, puan/ağaç güncellemesi sonrası customer'ı kaydetmek için kullanır
     public Customer saveCustomerEntity(Customer customer) {
         return customerRepository.save(customer);
     }

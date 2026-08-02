@@ -7,11 +7,12 @@ import com.ekim.bankingapi.exception.InvalidRequestException;
 import com.ekim.bankingapi.nature.NatureService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -60,10 +61,9 @@ public class TransactionService {
         return TransactionResponse.fromEntity(transaction);
     }
 
-    public List<TransactionResponse> getTransactionHistory(Long accountId) {
-        return transactionRepository.findByAccountIdOrderByTimestampDesc(accountId).stream()
-                .map(TransactionResponse::fromEntity)
-                .toList();
+    public Page<TransactionResponse> getTransactionHistory(Long accountId, Pageable pageable) {
+        return transactionRepository.findByAccountId(accountId, pageable)
+                .map(TransactionResponse::fromEntity);
     }
 
     private Transaction saveTransaction(Account account, TransactionType type, BigDecimal amount, BigDecimal balanceAfter) {

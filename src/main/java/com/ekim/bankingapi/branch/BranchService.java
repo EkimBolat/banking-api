@@ -3,9 +3,9 @@ package com.ekim.bankingapi.branch;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +33,9 @@ public class BranchService {
         return BranchResponse.fromEntity(branch);
     }
 
-    public List<BranchResponse> getAllBranches() {
-        return branchRepository.findAll().stream()
-                .map(BranchResponse::fromEntity)
-                .toList();
+    public Page<BranchResponse> getAllBranches(Pageable pageable) {
+        return branchRepository.findAll(pageable)
+                .map(BranchResponse::fromEntity);
     }
 
     // Customer feature'ı, şubeyi entity olarak kullanacağı için bunu koruyoruz

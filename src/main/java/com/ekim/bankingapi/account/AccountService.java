@@ -9,13 +9,14 @@ import com.ekim.bankingapi.exception.InvalidRequestException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
 import com.ekim.bankingapi.exception.TransactionLimitExceededException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -62,10 +63,9 @@ public class AccountService {
         return AccountResponse.fromEntity(account);
     }
 
-    public List<AccountResponse> getAllAccounts() {
-        return accountRepository.findAll().stream()
-                .map(AccountResponse::fromEntity)
-                .toList();
+    public Page<AccountResponse> getAllAccounts(Pageable pageable) {
+        return accountRepository.findAll(pageable)
+                .map(AccountResponse::fromEntity);
     }
 
     // Transaction ve Transfer service'leri, para çıkışından ÖNCE bu kontrolü çağırır
