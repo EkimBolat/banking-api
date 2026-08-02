@@ -11,7 +11,7 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - 🔐 **JWT Authentication** with role-based access control (Customer / Admin)
 - 🛡️ **Fraud protection**: brute-force login lockout, daily/monthly withdrawal limits
 - 🌱 **Nature Points**: gamified sustainability system with anti-abuse safeguards
-- 🏦 Full banking core: accounts (Checking/Savings), transfers, transaction history, branches
+- 🏦 **Full banking core**: accounts (Checking/Savings), transfers, transaction history, branches
 - 🐳 **Dockerized**, fully tested (unit + integration), documented via Swagger
 
 ## 🛠️ Tech Stack
