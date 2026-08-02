@@ -39,10 +39,10 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/branches").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/accounts/*/limits").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/branches").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/*/limits").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

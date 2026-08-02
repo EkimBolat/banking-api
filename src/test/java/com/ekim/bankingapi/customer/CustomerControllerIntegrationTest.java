@@ -39,7 +39,7 @@ class CustomerControllerIntegrationTest {
         request.setAge(30);
         request.setAddress("Test Address");
 
-        mockMvc.perform(post("/api/customers")
+        mockMvc.perform(post("/api/v1/customers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -57,7 +57,7 @@ class CustomerControllerIntegrationTest {
         request.setNationalId("99999999999");
         request.setAge(30);
 
-        mockMvc.perform(post("/api/customers")
+        mockMvc.perform(post("/api/v1/customers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -66,7 +66,7 @@ class CustomerControllerIntegrationTest {
 
     @Test
     void getCustomerById_shouldReturn404_whenNotFound() throws Exception {
-        mockMvc.perform(get("/api/customers/999999"))
+        mockMvc.perform(get("/api/v1/customers/999999"))
                 .andExpect(status().isNotFound());
     }
 }
