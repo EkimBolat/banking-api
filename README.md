@@ -6,6 +6,14 @@ A RESTful Banking API built with **Spring Boot**, **PostgreSQL**, and **Spring D
 
 Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once a customer accumulates enough points, a **real tree gets planted** on their behalf, and they receive a unique digital certificate as proof of their contribution.
 
+## ✨ Key Features
+
+- 🔐 **JWT Authentication** with role-based access control (Customer / Admin)
+- 🛡️ **Fraud protection**: brute-force login lockout, daily/monthly withdrawal limits
+- 🌱 **Nature Points**: gamified sustainability system with anti-abuse safeguards
+- 🏦 Full banking core: accounts (Checking/Savings), transfers, transaction history, branches
+- 🐳 **Dockerized**, fully tested (unit + integration), documented via Swagger
+
 ## 🛠️ Tech Stack
 
 - Java 21
@@ -18,24 +26,14 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 
 ## 🚀 Roadmap
 
-- [x] Project setup
-- [x] PostgreSQL integration
-- [x] Account Management
-- [x] Deposit & Withdrawal
-- [x] Money Transfer
-- [x] Transaction History
-- [x] JWT Authentication
-- [x] Docker
-- [x] Unit & Integration Tests
+**Core:** ✅ Project setup · PostgreSQL · Account Management · Deposit & Withdrawal · Money Transfer · Transaction History · JWT · Docker · Tests
 
-### 🌟 Extended Features
+**Extended:**
 - [x] Account Types (Checking / Savings with interest rate)
-- [x] Branch Management
-- [x] Nature Points & Tree Certificates
-- [x] Account-Branch Assignment
+- [x] Branch Management + Account-Branch Assignment
+- [x] Nature Points & Tree Certificates (with anti-abuse protection)
 - [x] Login with National ID + Brute-Force Protection
-- [x] Nature Points Anti-Abuse Protection (minimum amount + daily cap)
-- [x] Daily/Monthly Withdrawal Limits (fraud prevention)
+- [x] Daily/Monthly Withdrawal Limits
 - [x] Role-Based Access Control (Customer / Admin)
 
 ---
