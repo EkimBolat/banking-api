@@ -35,4 +35,9 @@ public class AccountController {
     public ResponseEntity<List<AccountResponse>> getAllAccounts() {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
+
+    @PutMapping("/{id}/limits")
+    public ResponseEntity<AccountResponse> updateLimits(@PathVariable Long id, @Valid @RequestBody AccountLimitRequest request) {
+        return ResponseEntity.ok(accountService.updateLimits(id, request));
+    }
 }

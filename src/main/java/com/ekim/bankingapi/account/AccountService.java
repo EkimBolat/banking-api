@@ -90,6 +90,14 @@ public class AccountService {
         account.setMonthlyWithdrawnAmount(newMonthlyTotal);
     }
 
+    public AccountResponse updateLimits(Long accountId, AccountLimitRequest request) {
+        Account account = findAccountEntityById(accountId);
+        account.setDailyLimit(request.getDailyLimit());
+        account.setMonthlyLimit(request.getMonthlyLimit());
+        Account saved = accountRepository.save(account);
+        return AccountResponse.fromEntity(saved);
+    }
+
     private void resetCountersIfNeeded(Account account) {
         LocalDate today = LocalDate.now();
         if (account.getLastWithdrawalDate() == null || !account.getLastWithdrawalDate().isEqual(today)) {

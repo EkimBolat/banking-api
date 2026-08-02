@@ -42,11 +42,11 @@ public class AuthService {
 
         User saved = userRepository.save(user);
 
-        String token = jwtService.generateToken(saved.getEmail(), saved.getId(), customer.getId());
+        String token = jwtService.generateToken(saved.getEmail(), saved.getId(), customer.getId(), saved.getRole().name());
 
         log.info("Registration successful: userId={}, customerId={}", saved.getId(), customer.getId());
 
-        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful", token);
+        return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful", token, saved.getRole());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -78,10 +78,10 @@ public class AuthService {
 
         loginAttemptService.recordSuccessfulLogin(nationalId);
 
-        String token = jwtService.generateToken(user.getEmail(), user.getId(), customer.getId());
+        String token = jwtService.generateToken(user.getEmail(), user.getId(), customer.getId(), user.getRole().name());
 
-        log.info("Login successful: userId={}, nationalId={}", user.getId(), nationalId);
+        log.info("Login successful: userId={}, nationalId={}, role={}", user.getId(), nationalId, user.getRole());
 
-        return new AuthResponse(user.getId(), customer.getId(), user.getEmail(), "Login successful", token);
+        return new AuthResponse(user.getId(), customer.getId(), user.getEmail(), "Login successful", token, user.getRole());
     }
 }

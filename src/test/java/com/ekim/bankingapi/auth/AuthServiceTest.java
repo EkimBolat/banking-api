@@ -67,7 +67,7 @@ class AuthServiceTest {
             u.setId(1L);
             return u;
         });
-        when(jwtService.generateToken(anyString(), anyLong(), anyLong())).thenReturn("fake-jwt-token");
+        when(jwtService.generateToken(anyString(), anyLong(), anyLong(), anyString())).thenReturn("fake-jwt-token");
 
         AuthResponse response = authService.register(request);
 
@@ -105,7 +105,7 @@ class AuthServiceTest {
         when(customerService.findCustomerEntityByNationalId("12345678901")).thenReturn(customer);
         when(userRepository.findByCustomerId(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("plain-password", "hashed-password")).thenReturn(true);
-        when(jwtService.generateToken(anyString(), anyLong(), anyLong())).thenReturn("fake-jwt-token");
+        when(jwtService.generateToken(anyString(), anyLong(), anyLong(), anyString())).thenReturn("fake-jwt-token");
 
         AuthResponse response = authService.login(request);
 

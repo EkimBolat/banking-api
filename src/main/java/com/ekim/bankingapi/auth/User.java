@@ -30,6 +30,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.CUSTOMER;
+
     @OneToOne
     @JoinColumn(name = "customer_id", nullable = false, unique = true)
     private Customer customer;
