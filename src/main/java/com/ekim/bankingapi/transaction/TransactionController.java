@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.transaction;
 
+import com.ekim.bankingapi.idempotency.IdempotencyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,16 +17,49 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final IdempotencyService idempotencyService;
 
     @PostMapping("/deposit/{accountId}")
-    public ResponseEntity<TransactionResponse> deposit(@PathVariable Long accountId, @Valid @RequestBody AmountRequest request) {
+    public ResponseEntity<TransactionResponse> deposit(
+            @PathVariable Long accountId,
+            @Valid @RequestBody AmountRequest request,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey
+    ) {
+        if (idempotencyKey != null) {
+            var cached = idempotencyService.getCachedResponse(idempotencyKey);
+            if (cached.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body((TransactionResponse) cached.get());
+            }
+        }
+
         TransactionResponse transaction = transactionService.deposit(accountId, request.getAmount());
+
+        if (idempotencyKey != null) {
+            idempotencyService.storeResponse(idempotencyKey, transaction);
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
     }
 
     @PostMapping("/withdraw/{accountId}")
-    public ResponseEntity<TransactionResponse> withdraw(@PathVariable Long accountId, @Valid @RequestBody AmountRequest request) {
+    public ResponseEntity<TransactionResponse> withdraw(
+            @PathVariable Long accountId,
+            @Valid @RequestBody AmountRequest request,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey
+    ) {
+        if (idempotencyKey != null) {
+            var cached = idempotencyService.getCachedResponse(idempotencyKey);
+            if (cached.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body((TransactionResponse) cached.get());
+            }
+        }
+
         TransactionResponse transaction = transactionService.withdraw(accountId, request.getAmount());
+
+        if (idempotencyKey != null) {
+            idempotencyService.storeResponse(idempotencyKey, transaction);
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
     }
 
