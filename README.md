@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./logo.png" alt="Evergreen Bank Logo" width="200"/>
+</p>
+
 # 🌲 Evergreen Bank API
 
 [![CI](https://github.com/EkimBolat/evergreen-bank/actions/workflows/ci.yml/badge.svg)](https://github.com/EkimBolat/evergreen-bank/actions/workflows/ci.yml)

@@ -1,2 +1,0 @@
-GET http://localhost:8080/api/v1/audit-logs
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBldmVyZ3JlZW5iYW5rLmNvbSIsInVzZXJJZCI6NCwiY3VzdG9tZXJJZCI6MTIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4NTc1MTQ4NywiZXhwIjoxNzg1ODM3ODg3fQ.hgaK_xD0UnucBOwYyJnPQ7MkSb-P9N6YHZ0q-FgiOd8
