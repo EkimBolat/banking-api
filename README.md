@@ -37,6 +37,8 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - [x] Login with National ID + Brute-Force Protection
 - [x] Daily/Monthly Withdrawal Limits
 - [x] Role-Based Access Control (Customer / Admin)
+- [x] Pagination, Idempotency, Refresh Tokens, API Versioning
+- [x] CI/CD Pipeline + Test Coverage Reporting
 
 ---
 
