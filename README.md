@@ -45,7 +45,19 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 
 ---
 
-## 🚀 Roadmap
+## 🚀 Getting Started
+
+```bash
+git clone https://github.com/EkimBolat/evergreen-bank.git
+cd evergreen-bank
+docker compose up --build
+```
+
+The API will be available at `http://localhost:8080`, with interactive documentation at `http://localhost:8080/swagger-ui/index.html`.
+
+---
+
+## 🗺️ Roadmap
 
 **Core:** ✅ Project setup · PostgreSQL · Account Management · Deposit & Withdrawal · Money Transfer · Transaction History · JWT · Docker · Tests
 
@@ -59,4 +71,10 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - [x] Pagination, Idempotency, Refresh Tokens, API Versioning
 - [x] CI/CD Pipeline + Test Coverage Reporting
 - [x] Health Check Endpoint
--
+- [x] Scheduled/Recurring Transfers
+
+---
+
+📌 **Status:** Core banking features complete — actively expanding functionality
+
+📄 **License:** [MIT](./LICENSE)
