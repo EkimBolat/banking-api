@@ -14,6 +14,7 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - 🛡️ **Fraud protection**: brute-force login lockout, daily/monthly withdrawal limits
 - 🌱 **Nature Points**: gamified sustainability system with anti-abuse safeguards
 - 🏦 **Full banking core**: accounts (Checking/Savings), transfers, transaction history, branches
+- ⏰ **Scheduled recurring transfers** (daily/weekly/monthly), processed via nightly batch job
 - 🐳 **Dockerized**, fully tested (unit + integration), documented via Swagger
 
 ## 🛠️ Tech Stack
@@ -39,6 +40,8 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - [x] Role-Based Access Control (Customer / Admin)
 - [x] Pagination, Idempotency, Refresh Tokens, API Versioning
 - [x] CI/CD Pipeline + Test Coverage Reporting
+- [x] Health Check Endpoint
+- [x] Scheduled/Recurring Transfers
 
 ---
 
