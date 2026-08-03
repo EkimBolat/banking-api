@@ -2,6 +2,7 @@ package com.ekim.bankingapi.transaction;
 
 import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountService;
+import com.ekim.bankingapi.audit.AuditLogService;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
 import com.ekim.bankingapi.nature.NatureService;
@@ -22,6 +23,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final NatureService natureService;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public TransactionResponse deposit(Long accountId, BigDecimal amount) {
@@ -34,6 +36,10 @@ public class TransactionService {
 
         Transaction transaction = saveTransaction(account, TransactionType.DEPOSIT, amount, newBalance);
         natureService.awardPointsForTransaction(account.getCustomer().getId(), amount);
+
+        auditLogService.log("Transaction", transaction.getId(), "DEPOSIT",
+                "Account: " + account.getAccountNumber() + ", Amount: " + amount);
+
         log.info("Deposit successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }
@@ -57,6 +63,10 @@ public class TransactionService {
 
         Transaction transaction = saveTransaction(account, TransactionType.WITHDRAWAL, amount, newBalance);
         natureService.awardPointsForTransaction(account.getCustomer().getId(), amount);
+
+        auditLogService.log("Transaction", transaction.getId(), "WITHDRAWAL",
+                "Account: " + account.getAccountNumber() + ", Amount: " + amount);
+
         log.info("Withdrawal successful: accountId={}, amount={}, newBalance={}", accountId, amount, newBalance);
         return TransactionResponse.fromEntity(transaction);
     }

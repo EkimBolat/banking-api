@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.customer;
 
+import com.ekim.bankingapi.audit.AuditLogService;
 import com.ekim.bankingapi.branch.Branch;
 import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
@@ -15,6 +16,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final BranchService branchService;
+    private final AuditLogService auditLogService;
 
     public CustomerResponse createCustomer(CustomerRequest request) {
         if (customerRepository.existsByEmail(request.getEmail())) {
@@ -39,6 +41,9 @@ public class CustomerService {
         }
 
         Customer saved = customerRepository.save(customer);
+
+        auditLogService.log("Customer", saved.getId(), "CREATE", "Created customer: " + saved.getEmail());
+
         return CustomerResponse.fromEntity(saved);
     }
 
@@ -66,12 +71,16 @@ public class CustomerService {
         }
 
         Customer saved = customerRepository.save(existing);
+
+        auditLogService.log("Customer", saved.getId(), "UPDATE", "Updated customer: " + saved.getEmail());
+
         return CustomerResponse.fromEntity(saved);
     }
 
     public void deleteCustomer(Long id) {
         Customer existing = findCustomerEntityById(id);
         customerRepository.delete(existing);
+        auditLogService.log("Customer", id, "DELETE", "Deleted customer: " + existing.getEmail());
     }
 
     public Customer findCustomerEntityById(Long id) {

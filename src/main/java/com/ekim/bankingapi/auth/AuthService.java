@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.auth;
 
+import com.ekim.bankingapi.audit.AuditLogService;
 import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.customer.CustomerService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
@@ -24,6 +25,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final LoginAttemptService loginAttemptService;
     private final RefreshTokenService refreshTokenService;
+    private final AuditLogService auditLogService;
 
     public AuthResponse register(RegisterRequest request) {
         Customer customer = customerService.findCustomerEntityByNationalId(request.getNationalId());
@@ -47,6 +49,8 @@ public class AuthService {
         String token = jwtService.generateToken(saved.getEmail(), saved.getId(), customer.getId(), saved.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(saved);
 
+        auditLogService.log("User", saved.getId(), "REGISTER", request.getNationalId(), "New user registered: " + saved.getEmail());
+
         log.info("Registration successful: userId={}, customerId={}", saved.getId(), customer.getId());
 
         return new AuthResponse(saved.getId(), customer.getId(), saved.getEmail(), "Registration successful", token, saved.getRole(), refreshToken);
@@ -63,6 +67,7 @@ public class AuthService {
         } catch (ResourceNotFoundException ex) {
             log.warn("Login failed - national ID not found: nationalId={}", nationalId);
             loginAttemptService.recordFailedAttempt(nationalId);
+            auditLogService.log("User", null, "LOGIN_FAILED", nationalId, "National ID not found");
             throw new InvalidCredentialsException("Invalid national ID or password");
         }
 
@@ -70,12 +75,14 @@ public class AuthService {
                 .orElseThrow(() -> {
                     log.warn("Login failed - no account for national ID: nationalId={}", nationalId);
                     loginAttemptService.recordFailedAttempt(nationalId);
+                    auditLogService.log("User", null, "LOGIN_FAILED", nationalId, "No account for national ID");
                     return new InvalidCredentialsException("Invalid national ID or password");
                 });
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("Login failed - wrong password: nationalId={}", nationalId);
             loginAttemptService.recordFailedAttempt(nationalId);
+            auditLogService.log("User", user.getId(), "LOGIN_FAILED", nationalId, "Wrong password");
             throw new InvalidCredentialsException("Invalid national ID or password");
         }
 
@@ -83,6 +90,8 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail(), user.getId(), customer.getId(), user.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(user);
+
+        auditLogService.log("User", user.getId(), "LOGIN_SUCCESS", nationalId, "User logged in: " + user.getEmail());
 
         log.info("Login successful: userId={}, nationalId={}, role={}", user.getId(), nationalId, user.getRole());
 

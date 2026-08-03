@@ -1,5 +1,6 @@
 package com.ekim.bankingapi.customer;
 
+import com.ekim.bankingapi.audit.AuditLogService;
 import com.ekim.bankingapi.branch.BranchService;
 import com.ekim.bankingapi.exception.DuplicateResourceException;
 import com.ekim.bankingapi.exception.ResourceNotFoundException;
@@ -24,6 +25,9 @@ class CustomerServiceTest {
 
     @Mock
     private BranchService branchService;
+
+    @Mock
+    private AuditLogService auditLogService;
 
     @InjectMocks
     private CustomerService customerService;

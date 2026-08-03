@@ -2,6 +2,7 @@ package com.ekim.bankingapi.transaction;
 
 import com.ekim.bankingapi.account.Account;
 import com.ekim.bankingapi.account.AccountService;
+import com.ekim.bankingapi.audit.AuditLogService;
 import com.ekim.bankingapi.customer.Customer;
 import com.ekim.bankingapi.exception.InsufficientBalanceException;
 import com.ekim.bankingapi.exception.InvalidRequestException;
@@ -30,6 +31,9 @@ class TransactionServiceTest {
 
     @Mock
     private NatureService natureService;
+
+    @Mock
+    private AuditLogService auditLogService;
 
     @InjectMocks
     private TransactionService transactionService;
