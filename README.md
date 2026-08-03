@@ -5,12 +5,22 @@
 # 🌲 Evergreen Bank API
 
 [![CI](https://github.com/EkimBolat/evergreen-bank/actions/workflows/ci.yml/badge.svg)](https://github.com/EkimBolat/evergreen-bank/actions/workflows/ci.yml)
+![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?logo=springboot&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
+![JWT](https://img.shields.io/badge/Auth-JWT-black?logo=jsonwebtokens&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 A RESTful Banking API built with **Spring Boot**, **PostgreSQL**, and **Spring Data JPA** — with a twist: every transaction contributes to real-world environmental impact through our **Nature Points** system.
+
+---
 
 ## 🌳 What Makes This Different
 
 Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once a customer accumulates enough points, a **real tree gets planted** on their behalf, and they receive a unique digital certificate as proof of their contribution.
+
+---
 
 ## ✨ Key Features
 
@@ -21,6 +31,8 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - ⏰ **Scheduled recurring transfers** (daily/weekly/monthly), processed via nightly batch job
 - 🐳 **Dockerized**, fully tested (unit + integration), documented via Swagger
 
+---
+
 ## 🛠️ Tech Stack
 
 - Java 21
@@ -30,6 +42,8 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - Docker
 - JWT Authentication
 - Maven
+
+---
 
 ## 🚀 Roadmap
 
@@ -45,8 +59,4 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 - [x] Pagination, Idempotency, Refresh Tokens, API Versioning
 - [x] CI/CD Pipeline + Test Coverage Reporting
 - [x] Health Check Endpoint
-- [x] Scheduled/Recurring Transfers
-
----
-
-📌 **Status:** Core banking features complete — actively expanding functionality
+-
