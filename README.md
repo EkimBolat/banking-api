@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="Evergreen Bank Logo" width="200"/>
+  <img src="./EverGreen_Bank_Logo.png" alt="Evergreen Bank Logo" width="200"/>
 </p>
 
 # 🌲 Evergreen Bank API
