@@ -50,6 +50,11 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 ```bash
 git clone https://github.com/EkimBolat/evergreen-bank.git
 cd evergreen-bank
+```
+
+Copy `.env.example` and set your own `DB_PASSWORD` and `JWT_SECRET` as environment variables, then run:
+
+```bash
 docker compose up --build
 ```
 
