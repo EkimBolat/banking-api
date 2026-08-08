@@ -22,6 +22,14 @@ Every deposit, withdrawal, and transfer earns customers **Nature Points**. Once 
 
 ---
 
+## 🔀 Domain Flow
+
+<p align="center">
+  <img src="./evergreen-bank-architecture.png" alt="Evergreen Bank Domain Flow" width="800"/>
+</p>
+
+---
+
 ## ✨ Key Features
 
 - 🔐 **JWT Authentication** with role-based access control (Customer / Admin)
